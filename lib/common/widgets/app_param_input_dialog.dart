@@ -7,15 +7,17 @@ Future<void> dialogBuilder(
   BuildContext context,
   Flavor flavor,
   WeatherReqParam weatherParam,
+  Function onSubmit
 ) {
   return showDialog<void>(
     context: context,
     builder: (BuildContext context) {
+      TextEditingController controller = TextEditingController();
       return AlertDialog(
         backgroundColor: flavor.base,
         contentTextStyle: TextStyle(color: flavor.flamingo),
         title: Text(weatherParam.title),
-        content: _getInputField(weatherParam, flavor),
+        content: _getInputField(controller, weatherParam, flavor),
         actions: <Widget>[
           TextButton(
             style: ButtonStyle(
@@ -31,7 +33,11 @@ Future<void> dialogBuilder(
               backgroundColor: WidgetStatePropertyAll(flavor.flamingo),
             ),
             child: Text("Submit"),
-            onPressed: () => {Navigator.of(context).pop()},
+            onPressed: () => {
+              weatherParam.value = double.tryParse(controller.text) ?? 0,
+              onSubmit(),
+              Navigator.of(context).pop()
+            },
           ),
         ],
       );
@@ -39,10 +45,8 @@ Future<void> dialogBuilder(
   );
 }
 
-Widget _getInputField(WeatherReqParam weatherParam, Flavor flavor) {
-  TextEditingController controller = TextEditingController();
+Widget _getInputField(TextEditingController controller, WeatherReqParam weatherParam, Flavor flavor) {
   controller.text = weatherParam.valuesAsString();
-
   return TextField(
     style: TextStyle(color: flavor.flamingo),
     autofocus: true,

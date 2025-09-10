@@ -65,7 +65,9 @@ class _AppParamInputState extends State<AppParamInput> {
                 IconButton.filled(
                   icon: Icon(LucideIcons.pencil300),
                   onPressed: () => {
-                    dialogBuilder(context, widget.flavor, widget.weatherParam),
+                    dialogBuilder(context, widget.flavor, widget.weatherParam, () => {setState(() {
+                      
+                    })}),
                   },
                 ),
               ],
