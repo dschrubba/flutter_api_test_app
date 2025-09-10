@@ -11,6 +11,7 @@ dependencies:
     sdk: flutter
   catppuccin_flutter: ^1.0.0
   lucide_icons_flutter: ^3.1.0
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:
@@ -19,3 +20,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+      - assets/meow_code.gif
+      - assets/meow_nod.gif

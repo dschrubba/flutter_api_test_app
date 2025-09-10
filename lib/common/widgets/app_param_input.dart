@@ -23,7 +23,9 @@ class _AppParamInputState extends State<AppParamInput> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(8),
+      margin: EdgeInsets.only(
+        bottom: 8
+      ),
       padding: EdgeInsets.only(
         left: widget.weatherParam.isRequired ? 16 : 0,
         right: 16,
@@ -37,6 +39,7 @@ class _AppParamInputState extends State<AppParamInput> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Flexible(
+            flex: 1,
             child: Row(
               children: [
                 if (!widget.weatherParam.isRequired)
@@ -53,6 +56,7 @@ class _AppParamInputState extends State<AppParamInput> {
             ),
           ),
           Flexible(
+            flex: 2,
             child: Row(
               spacing: 16,
               mainAxisAlignment: MainAxisAlignment.end,

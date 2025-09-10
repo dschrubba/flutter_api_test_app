@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:catppuccin_flutter/catppuccin_flutter.dart';
 import 'package:flutter_api_test_app/design/flutter_catppuccin.dart';
 import 'package:flutter_api_test_app/screens/main/presentation/screen_main.dart';
-
-void main() {
-  runApp(const MainApp());
+import 'package:shared_preferences/shared_preferences.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  runApp(MainApp(sharedPreferences: prefs));
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  final SharedPreferences sharedPreferences;
+  const MainApp({super.key, required this.sharedPreferences});
 
   @override
   Widget build(BuildContext context) {

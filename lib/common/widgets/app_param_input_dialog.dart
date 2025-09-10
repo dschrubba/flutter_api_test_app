@@ -17,25 +17,21 @@ Future<void> dialogBuilder(
         title: Text(weatherParam.title),
         content: _getInputField(weatherParam, flavor),
         actions: <Widget>[
-          TextButton( 
+          TextButton(
             style: ButtonStyle(
               foregroundColor: WidgetStatePropertyAll(flavor.flamingo),
-              overlayColor: WidgetStatePropertyAll(flavor.flamingo)
+              overlayColor: WidgetStatePropertyAll(flavor.flamingo),
             ),
             child: Text("Discard"),
-            onPressed: () => {
-              Navigator.of(context).pop()
-            },
+            onPressed: () => {Navigator.of(context).pop()},
           ),
           FilledButton(
             style: ButtonStyle(
               foregroundColor: WidgetStatePropertyAll(flavor.crust),
-              backgroundColor: WidgetStatePropertyAll(flavor.flamingo)
+              backgroundColor: WidgetStatePropertyAll(flavor.flamingo),
             ),
             child: Text("Submit"),
-            onPressed: () => {
-              Navigator.of(context).pop()
-            },
+            onPressed: () => {Navigator.of(context).pop()},
           ),
         ],
       );
@@ -46,35 +42,21 @@ Future<void> dialogBuilder(
 Widget _getInputField(WeatherReqParam weatherParam, Flavor flavor) {
   TextEditingController controller = TextEditingController();
   controller.text = weatherParam.valuesAsString();
-  switch (weatherParam.getType()) {
-    case const (double):
-      return TextField(
-        style: TextStyle(color: flavor.flamingo),
-        autofocus: true,
-        controller: controller,
-        decoration: InputDecoration(
-          isDense: true,
-          border: OutlineInputBorder(),
-          fillColor: flavor.text,
-          labelText: null,
-        ),
-        keyboardType: TextInputType.numberWithOptions(
-          signed: true,
-          decimal: true,
-        ),
-        inputFormatters: <TextInputFormatter>[
-          FilteringTextInputFormatter.deny(',', replacementString: '.'),
-          FilteringTextInputFormatter.allow(RegExp(r'(^\d*\.?\d{0,6})')),
-        ],
-      );
-    case const (String):
-      TextEditingController controller = TextEditingController();
-      return TextField(
-        controller: controller,
-        decoration: InputDecoration(labelText: "Enter your text"),
-        keyboardType: TextInputType.text,
-      );
-    default:
-      return Container();
-  }
+
+  return TextField(
+    style: TextStyle(color: flavor.flamingo),
+    autofocus: true,
+    controller: controller,
+    decoration: InputDecoration(
+      isDense: true,
+      border: OutlineInputBorder(),
+      fillColor: flavor.text,
+      labelText: null,
+    ),
+    keyboardType: TextInputType.numberWithOptions(signed: true, decimal: true),
+    inputFormatters: <TextInputFormatter>[
+      FilteringTextInputFormatter.deny(',', replacementString: '.'),
+      FilteringTextInputFormatter.allow(RegExp(r'(^\d*\.?\d{0,6})')),
+    ],
+  );
 }

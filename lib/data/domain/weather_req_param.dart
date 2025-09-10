@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/widgets.dart';
 
 class WeatherReqParam<T> {
@@ -5,34 +6,56 @@ class WeatherReqParam<T> {
   final String parameterName;
   final String displayUnit;
   final bool isRequired;
+  bool isSelected;
   final IconData? iconData;
-  T? _value;
-  set value(T? v) {
-    if ((v != null) && (_value == null)) {
-      _value = v;
-    }
-  }
-
-  T? get value => _value;
+  num? value;
   WeatherReqParam(
     this.title,
     this.parameterName,
     this.displayUnit, 
-    this._value,
+    this.value,
     this.isRequired,
+    this.isSelected,
     [this.iconData]
     );
 
-  bool setValueOnce(T v) {
-    if (_value == null) {
-      _value = v;
-      return true;
-    }
-    return false;
-  }
-  Type getType() {
-    return T;
+String valuesAsString() => value.toString();
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'parameterName': parameterName,
+      'displayUnit': displayUnit,
+      'isRequired': isRequired,
+      'isSelected': isSelected,
+      'value': value,
+      'iconCodePoint': iconData?.codePoint ?? -1,
+      'iconFontFamily': iconData?.fontFamily ?? "",
+      'iconFontPackage': iconData?.fontPackage ?? "",
+      'iconMatchTextDirection': iconData?.matchTextDirection ?? false,
+    };
   }
 
-  String valuesAsString() => _value.toString();
+  String toJson() => jsonEncode(toMap());
+
+  factory WeatherReqParam.fromJson(String jsonStr) {
+    final map = jsonDecode(jsonStr) as Map<String, dynamic>;
+    IconData? icon;
+    if ((map['iconCodePoint'] != null) && (map['iconCodePoint'] >= 0)) {
+      icon = IconData(
+        map['iconCodePoint'],
+        fontFamily: map['iconFontFamily'],
+        fontPackage: map['iconFontPackage'],
+        matchTextDirection: map['iconMatchTextDirection'] ?? false,
+      );
+    }
+    return WeatherReqParam(
+      map['title'] as String,
+      map['parameterName'] as String,
+      map['displayUnit'] as String,
+      (map['value'] as num?)?.toDouble(),
+      map['isRequired'] as bool,
+      map['isSelected'] as bool,
+      icon,
+    );
+  }
 }
