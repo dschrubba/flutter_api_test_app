@@ -2,9 +2,12 @@ import 'package:flutter_api_test_app/common/utils.dart';
 import 'package:flutter_api_test_app/common/widgets/app_param_check_card.dart';
 import 'package:flutter_api_test_app/common/widgets/app_param_input.dart';
 import 'package:flutter_api_test_app/common/widgets/section_title.dart';
+import 'package:flutter_api_test_app/data/domain/data_service.dart';
 import 'package:flutter_api_test_app/data/domain/weather_req_param.dart';
 import 'package:flutter_api_test_app/screens/main/domain/screen_main_params.dart';
 import 'package:flutter_api_test_app/screens/main/domain/screen_main_snackbar.dart';
+import 'package:flutter_api_test_app/screens/main/widgets/screen_main_data_display.dart';
+import 'package:http/http.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:catppuccin_flutter/catppuccin_flutter.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +34,11 @@ class _ScreenMainState extends State<ScreenMain> {
     });
   }
   void onGetData(BuildContext context) {
+
+    DataService.get(params)?.then((Response res) => {
+      print(res.body)
+    });
+
     List<WeatherReqParam> selectedParams = [...params.where((WeatherReqParam p) => !p.isRequired && p.isSelected)];
     if (selectedParams.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(screenMainSnackBar(widget.flavor));
@@ -114,6 +122,15 @@ class _ScreenMainState extends State<ScreenMain> {
                 icon: Icon(LucideIcons.earth300),
                 label: Text("Get Data"),
               ),
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 16
+                ),
+                child: AspectRatio(
+                  aspectRatio: 2/1,
+                  child: ScreenMainDataDisplay(flavor: widget.flavor,)
+                ),
+              )
             ],
           ),
         ),

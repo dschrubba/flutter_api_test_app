@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/widgets.dart';
 
-class WeatherReqParam<T> {
+class WeatherReqParam {
   final String title;
   final String parameterName;
   final String displayUnit;

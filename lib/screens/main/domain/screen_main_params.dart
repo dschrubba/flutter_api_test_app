@@ -4,14 +4,14 @@ import 'package:flutter_api_test_app/data/domain/weather_req_param.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 List<WeatherReqParam> params = [
-  WeatherReqParam<double>("Latitude", "latitude", "°", 0, true, false),
-  WeatherReqParam<double>("Longitude", "longitude", "°", 0, true, false),
-  WeatherReqParam<double>("Temperature", "temperature_2m", "°C", 0, false, false),
-  WeatherReqParam<double>("Rel. Humidity (2m)", "relative_humidity_2m", "%", 0, false, false),
-  WeatherReqParam<double>("Rain", "rain", "mm", 0, false, false),
-  WeatherReqParam<double>("Cloud Cover", "cloud_cover", "%", 0, false, false),
-  WeatherReqParam<double>("Dew Point (2m)", "dew_point_2m", "°C", 0, false, false),
-  WeatherReqParam<double>("Apparent Temperature", "apparent_temperature", "°C", 0, false, false),
+  WeatherReqParam("Latitude", "latitude", "°", 0, true, false),
+  WeatherReqParam("Longitude", "longitude", "°", 0, true, false),
+  WeatherReqParam("Temperature", "temperature_2m", "°C", 0, false, false),
+  WeatherReqParam("Rel. Humidity (2m)", "relative_humidity_2m", "%", 0, false, false),
+  WeatherReqParam("Rain", "rain", "mm", 0, false, false),
+  WeatherReqParam("Cloud Cover", "cloud_cover", "%", 0, false, false),
+  WeatherReqParam("Dew Point (2m)", "dew_point_2m", "°C", 0, false, false),
+  WeatherReqParam("Apparent Temperature", "apparent_temperature", "°C", 0, false, false),
 ];
 
 Future<bool> saveParams() async {

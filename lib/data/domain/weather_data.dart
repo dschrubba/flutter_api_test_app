@@ -41,3 +41,4 @@ class HourlyData {
     required this.cloud_cover,
   });
 }
+
