@@ -3,6 +3,7 @@ import 'package:flutter_api_test_app/common/widgets/app_param_check_card.dart';
 import 'package:flutter_api_test_app/common/widgets/app_param_input.dart';
 import 'package:flutter_api_test_app/common/widgets/section_title.dart';
 import 'package:flutter_api_test_app/data/domain/data_service.dart';
+import 'package:flutter_api_test_app/data/domain/weather_data.dart';
 import 'package:flutter_api_test_app/data/domain/weather_req_param.dart';
 import 'package:flutter_api_test_app/screens/main/domain/screen_main_params.dart';
 import 'package:flutter_api_test_app/screens/main/domain/screen_main_snackbar.dart';
@@ -35,8 +36,12 @@ class _ScreenMainState extends State<ScreenMain> {
   }
   void onGetData(BuildContext context) {
 
-    DataService.get(params)?.then((Response res) => {
-      print(res.body)
+    DataService.get(params)?.then((Response res) {
+
+      WeatherData? data = DataService.convert(res.body);
+
+      print(res.body);
+      print(res.request!.url);
     });
 
     List<WeatherReqParam> selectedParams = [...params.where((WeatherReqParam p) => !p.isRequired && p.isSelected)];

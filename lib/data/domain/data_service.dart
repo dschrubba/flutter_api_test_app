@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter_api_test_app/data/domain/weather_data.dart';
 import 'package:flutter_api_test_app/data/domain/weather_req_param.dart';
 import 'package:http/http.dart' as http;
 
@@ -29,6 +32,13 @@ class DataService {
       print(e);
       return null;
     }
-
+  }
+  static WeatherData? convert(String responseBody) {
+    try {
+      return WeatherData.fromJson(jsonDecode(responseBody));
+    } catch(e) {
+      print(e);
+      return null;
+    }
   }
 }
