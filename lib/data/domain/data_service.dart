@@ -65,4 +65,5 @@ static Future<WeatherData?> loadFromSharedPrefs() async {
     return null;
   }
 }
+
 }

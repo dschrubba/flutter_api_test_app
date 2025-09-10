@@ -1,10 +1,10 @@
 import 'dart:developer';
-
 import 'package:flutter_api_test_app/common/utils.dart';
 import 'package:flutter_api_test_app/common/widgets/app_param_check_card.dart';
 import 'package:flutter_api_test_app/common/widgets/app_param_input.dart';
 import 'package:flutter_api_test_app/common/widgets/section_title.dart';
 import 'package:flutter_api_test_app/data/domain/data_service.dart';
+import 'package:flutter_api_test_app/data/domain/fallback_mock_data.dart';
 import 'package:flutter_api_test_app/data/domain/weather_data.dart';
 import 'package:flutter_api_test_app/data/domain/weather_req_param.dart';
 import 'package:flutter_api_test_app/screens/main/domain/screen_main_params.dart';
@@ -14,6 +14,7 @@ import 'package:http/http.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:catppuccin_flutter/catppuccin_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ScreenMain extends StatefulWidget {
   final Flavor flavor;
@@ -63,21 +64,41 @@ class _ScreenMainState extends State<ScreenMain> {
       });
     }
   }
-
+  
+  Future<void> clear() async {
+    var instance = await SharedPreferences.getInstance();
+    setState(() {
+      instance.clear();
+      currentData = null;
+      for (WeatherReqParam param in params) {
+        param.isSelected = false;
+        param.value = 0;
+      }
+    });
+  }
   WeatherData? initialData;
 
   @override
   void initState() {
-    // Try loading data from shared prefs
+    
+    // Load last saved weather data from shared prefs
     if (initialData == null) {
       DataService.loadFromSharedPrefs().then((d) {
         log(d.toString());
         if (d != null) {
-          // Set data, if current data is null
+          // If saved data was loaded successfully and current data
+          // is null, set initial data as current data 
           initialData = d;
           if (initialData != null && currentData == null) {
             setState(() {
               currentData = initialData;
+            });
+          }
+          // If initial data isn't available and current data
+          // is null, use mock data as fallback
+          else if (initialData == null && currentData == null) {
+            setState(() {
+              currentData = mockData;
             });
           }
         }
@@ -147,6 +168,14 @@ class _ScreenMainState extends State<ScreenMain> {
                         onPressed: () => getData(context),
                         icon: Icon(LucideIcons.earth300),
                         label: Text("Get Data"),
+                      ),
+                    ),
+                    Flexible(
+                      fit: FlexFit.tight,
+                      child: FilledButton.icon(
+                        onPressed: () => clear(),
+                        icon: Icon(LucideIcons.trash2300),
+                        label: Text("Clear"),
                       ),
                     ),
                   ],
