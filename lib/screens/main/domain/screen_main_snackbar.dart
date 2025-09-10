@@ -1,7 +1,7 @@
 import 'package:catppuccin_flutter/catppuccin_flutter.dart';
 import 'package:flutter/material.dart';
 
-SnackBar screenMainSnackBar(Flavor flavor) {
+SnackBar screenMainSnackBar(Flavor flavor, String message) {
     return SnackBar(
       backgroundColor: flavor.crust,
       content: Flex(
@@ -12,7 +12,7 @@ SnackBar screenMainSnackBar(Flavor flavor) {
         children: [
           Flexible(
             child: Text(
-              'Please select at least one parameter',
+              message,
               style: TextStyle(color: flavor.yellow),
             ),
           ),

@@ -19,7 +19,7 @@ class WeatherReqParam {
     [this.iconData]
     );
 
-String valuesAsString() => value.toString();
+  String valuesAsString() => value.toString();
   Map<String, dynamic> toMap() {
     return {
       'title': title,

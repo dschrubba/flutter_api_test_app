@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_api_test_app/common/utils.dart';
 import 'package:flutter_api_test_app/common/widgets/app_param_check_card.dart';
 import 'package:flutter_api_test_app/common/widgets/app_param_input.dart';
@@ -20,35 +22,79 @@ class ScreenMain extends StatefulWidget {
   @override
   State<ScreenMain> createState() => _ScreenMainState();
 }
+
 class _ScreenMainState extends State<ScreenMain> {
+  WeatherData? currentData;
   void randomize() {
     setState(() {
-      final Map<String,double> latlon = randomLatLon();
+      final Map<String, double> latlon = randomLatLon();
       params.firstWhere((WeatherReqParam p) => p.parameterName == "latitude").value = latlon["lat"];
       params.firstWhere((WeatherReqParam p) => p.parameterName == "longitude").value = latlon["lon"];
-      params.firstWhere((WeatherReqParam p) => p.parameterName == "temperature_2m").isSelected = randomBool();
-      params.firstWhere((WeatherReqParam p) => p.parameterName == "relative_humidity_2m").isSelected = randomBool();
+      params.firstWhere((WeatherReqParam p) => p.parameterName == "temperature_2m",).isSelected = randomBool();
+      params.firstWhere((WeatherReqParam p) => p.parameterName == "relative_humidity_2m",).isSelected = randomBool();
       params.firstWhere((WeatherReqParam p) => p.parameterName == "rain").isSelected = randomBool();
-      params.firstWhere((WeatherReqParam p) => p.parameterName == "cloud_cover").isSelected = randomBool();
-      params.firstWhere((WeatherReqParam p) => p.parameterName == "dew_point_2m").isSelected = randomBool();
-      params.firstWhere((WeatherReqParam p) => p.parameterName == "apparent_temperature").isSelected = randomBool();
+      params.firstWhere((WeatherReqParam p) => p.parameterName == "cloud_cover",).isSelected = randomBool();
+      params.firstWhere((WeatherReqParam p) => p.parameterName == "dew_point_2m",).isSelected = randomBool();
+      params.firstWhere((WeatherReqParam p) => p.parameterName == "apparent_temperature",).isSelected = randomBool(); 
+      saveParams();
+      getData(context);
     });
   }
-  void onGetData(BuildContext context) {
 
-    DataService.get(params)?.then((Response res) {
-
-      WeatherData? data = DataService.convert(res.body);
-
-      print(res.body);
-      print(res.request!.url);
-    });
-
-    List<WeatherReqParam> selectedParams = [...params.where((WeatherReqParam p) => !p.isRequired && p.isSelected)];
+  Future<void> getData(BuildContext context) async {
+    List<WeatherReqParam> selectedParams = [
+      ...params.where((WeatherReqParam p) => !p.isRequired && p.isSelected),
+    ];
     if (selectedParams.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(screenMainSnackBar(widget.flavor));
+      ScaffoldMessenger.of(context).showSnackBar(
+        screenMainSnackBar(
+          widget.flavor,
+          'Please select at least one parameter',
+        ),
+      );
+    } else {
+      await DataService.get(params)?.then((Response res) {
+        setState(() {
+          currentData = DataService.convert(res.body);
+          if (currentData != null) {
+            DataService.saveToSharedPrefs(currentData!);
+          }
+        });
+      });
     }
   }
+
+  WeatherData? initialData;
+
+  @override
+  void initState() {
+    // Try loading data from shared prefs
+    if (initialData == null) {
+      DataService.loadFromSharedPrefs().then((d) {
+        log(d.toString());
+        if (d != null) {
+          // Set data, if current data is null
+          initialData = d;
+          if (initialData != null && currentData == null) {
+            setState(() {
+              currentData = initialData;
+            });
+          }
+        }
+      });
+    }
+
+    // Try loading params from shared prefs
+    loadParams().then((List<WeatherReqParam> p)  {
+      if (p.isNotEmpty) {
+        setState(() {
+          params = p;
+        });
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -71,13 +117,15 @@ class _ScreenMainState extends State<ScreenMain> {
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 crossAxisCount: 3,
-                childAspectRatio: 1/1,
+                childAspectRatio: 1 / 1,
                 children: params
                     .where((WeatherReqParam p) => !p.isRequired)
-                    .map((WeatherReqParam p) => AppParamCheckCard(
-                        weatherParam: p, 
+                    .map(
+                      (WeatherReqParam p) => AppParamCheckCard(
+                        weatherParam: p,
                         flavor: widget.flavor,
-                      ))
+                      ),
+                    )
                     .toList(),
               ),
               Padding(
@@ -88,54 +136,39 @@ class _ScreenMainState extends State<ScreenMain> {
                     Flexible(
                       fit: FlexFit.tight,
                       child: FilledButton.icon(
-                        onPressed: () => saveParams(),
-                        icon: Icon(LucideIcons.save300),
-                        label: Text("Save"),
-                      ),
-                    ),
-                    Flexible(
-                      fit: FlexFit.tight,
-                      child: FilledButton.icon(
-                        onPressed: () {
-                          loadParams().then((List<WeatherReqParam> list) {
-                            setState(() {
-                              for (final WeatherReqParam newParam in list) {
-                                WeatherReqParam oldParam = params.firstWhere((WeatherReqParam p) => newParam.parameterName == p.parameterName);
-                                oldParam.isSelected = newParam.isSelected;
-                                oldParam.value = newParam.value;
-                              }
-                            });
-                          });
-                        },
-                        icon: Icon(LucideIcons.archiveRestore300),
-                        label: Text("Restore"),
-                      ),
-                    ),
-                    Flexible(
-                      fit: FlexFit.tight,
-                      child: FilledButton.icon(
                         onPressed: () => randomize(),
                         icon: Icon(LucideIcons.dices300),
                         label: Text("Random"),
                       ),
                     ),
+                    Flexible(
+                      fit: FlexFit.tight,
+                      child: FilledButton.icon(
+                        onPressed: () => getData(context),
+                        icon: Icon(LucideIcons.earth300),
+                        label: Text("Get Data"),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              FilledButton.icon(
-                onPressed: () => onGetData(context),
-                icon: Icon(LucideIcons.earth300),
-                label: Text("Get Data"),
-              ),
+
               Padding(
-                padding: const EdgeInsets.only(
-                  top: 16
-                ),
+                padding: const EdgeInsets.only(top: 16),
                 child: AspectRatio(
-                  aspectRatio: 2/1,
-                  child: ScreenMainDataDisplay(flavor: widget.flavor,)
+                  aspectRatio: 1.7 / 1,
+                  child: AnimatedOpacity(
+                    opacity: currentData != null ? 1 : 0,
+                    duration: Duration(milliseconds: 250),
+                    child: (currentData != null)
+                        ? ScreenMainDataDisplay(
+                            weatherData: currentData!,
+                            flavor: widget.flavor,
+                          )
+                        : Container(),
+                  ),
                 ),
-              )
+              ),
             ],
           ),
         ),
